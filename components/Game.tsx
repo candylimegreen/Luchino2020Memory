@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Image, Dimensions, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Image, Dimensions, ScrollView, Animated } from 'react-native';
 import Card from './Card';
 
 const { width, height } = Dimensions.get('window');
@@ -27,10 +27,26 @@ export default function Game() {
   const [flippedIndices, setFlippedIndices] = useState<number[]>([]);
   const [matchedPairs, setMatchedPairs] = useState<string[]>([]);
   const [moves, setMoves] = useState<number>(0);
+  const [showAlert, setShowAlert] = useState<boolean>(false);
+  const [scaleAnim] = useState(new Animated.Value(0));
 
   useEffect(() => {
     initGame();
   }, []);
+
+  const animateAlert = () => {
+    scaleAnim.setValue(0);
+    setShowAlert(true);
+    Animated.sequence([
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        useNativeDriver: true,
+        speed: 20,
+        bounciness: 15
+      }),
+    ]).start();
+    setTimeout(() => setShowAlert(false), 1500);
+  };
 
   const initGame = (): void => {
     const shuffledCards: CardType[] = [...CARD_PAIRS_VALUE, ...CARD_PAIRS_VALUE]
@@ -69,6 +85,7 @@ export default function Game() {
             ? { ...card, isMatched: true }
             : card
         ));
+        animateAlert();
       }
       setTimeout(() => setFlippedIndices([]), 1000);
     }
@@ -82,6 +99,19 @@ export default function Game() {
         resizeMode="cover"
       />
       <View style={styles.overlay}>
+        {showAlert && (
+          <Animated.View style={[
+            styles.alertContainer,
+            {
+              transform: [
+                { scale: scaleAnim },
+              ]
+            }
+          ]}>
+            <Text style={styles.alertText}>Bravo Luchino!</Text>
+            <Text style={styles.alertEmoji}>🌟</Text>
+          </Animated.View>
+        )}
         <View style={styles.statsContainer}>
           <Text style={styles.stats}>Super Mosse: </Text>
           <Text style={styles.movesNumber}>{moves} ✨</Text>
@@ -183,5 +213,34 @@ const styles = StyleSheet.create({
     color: '#FF0000',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  alertContainer: {
+    position: 'absolute',
+    top: '40%',
+    left: '50%',
+    transform: [{ translateX: -100 }],
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    padding: 20,
+    borderRadius: 15,
+    zIndex: 1000,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    alignItems: 'center',
+  },
+  alertText: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#FF8C00',
+    textAlign: 'center',
+    textShadowColor: 'rgba(0, 0, 0, 0.1)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
+  },
+  alertEmoji: {
+    fontSize: 32,
+    marginTop: 5,
   },
 });

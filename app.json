@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "848fa4ca-00bc-4f79-939b-c0ca662e6065"
+      }
+    },
+    "android": {
+      "package": "com.candylimegreen.memorygame"
+    }
+  }
+}
