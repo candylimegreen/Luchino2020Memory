@@ -100,19 +100,18 @@ export default function MemoryGame({ imagesType, onBackToHome }: { imagesType: I
   };
 
   const handleCardPress = (index: number): void => {
-    // Create a copy of the current cards to modify
-    const updatedCards = [...cards];
-    
     if (
       flippedIndices.length === 2 ||
-      updatedCards[index].isFlipped ||
-      updatedCards[index].isMatched
+      cards[index].isFlipped ||
+      cards[index].isMatched
     ) {
       return;
     }
 
-    // Flip the current card
-    updatedCards[index] = { ...updatedCards[index], isFlipped: true };
+    // Create a copy of cards and flip the current card
+    const updatedCards = cards.map((card, i) => 
+      i === index ? { ...card, isFlipped: true } : card
+    );
     setCards(updatedCards);
 
     const newFlippedIndices = [...flippedIndices, index];
@@ -121,19 +120,21 @@ export default function MemoryGame({ imagesType, onBackToHome }: { imagesType: I
     if (newFlippedIndices.length === 2) {
       setMoves(moves + 1);
       const [firstIndex, secondIndex] = newFlippedIndices;
-      if (cards[firstIndex].value === cards[secondIndex].value) {
-        // Match found
-        const matchedCards = updatedCards.map((card, i) =>
-          i === firstIndex || i === secondIndex
-            ? { ...card, isMatched: true }
-            : card
-        );
-        setCards(matchedCards);
-        setMatchedPairs([...matchedPairs, cards[firstIndex].value]);
-        animateAlert();
-      } else {
-        // No match, flip back after a delay
-        setTimeout(() => {
+      
+      setTimeout(() => {
+        if (cards[firstIndex].value === cards[secondIndex].value) {
+          // Match found
+          const matchedCards = cards.map((card, i) =>
+            i === firstIndex || i === secondIndex
+              ? { ...card, isMatched: true, isFlipped: true }
+              : card
+          );
+          setCards(matchedCards);
+          setMatchedPairs([...matchedPairs, cards[firstIndex].value]);
+          setFlippedIndices([]);
+          animateAlert();
+        } else {
+          // No match, flip back unmatched cards
           const resetCards = cards.map((card, i) =>
             newFlippedIndices.includes(i) 
               ? { ...card, isFlipped: false }
@@ -141,8 +142,8 @@ export default function MemoryGame({ imagesType, onBackToHome }: { imagesType: I
           );
           setCards(resetCards);
           setFlippedIndices([]);
-        }, 1000);
-      }
+        }
+      }, 1000);
     }
   };
 
