@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, StatusBar } from 'react-native';
-import Game from './components/Game';
 import Home from './components/Home';
+import MemoryGame from './components/MemoryGame';
+import { ImagesType } from './lib/enums';
 
 export default function App() {
   const [showGame, setShowGame] = useState(false);
+  const [imagesType, setImagesType] = useState<ImagesType | null>(null);
 
-  const handleStartGame = () => {
+  const handleStartGame = (imagesType: ImagesType) => {
     setShowGame(true);
+    setImagesType(imagesType);
   };
 
   return (
@@ -17,7 +20,7 @@ export default function App() {
         {!showGame ? (
           <Home onStartGame={handleStartGame} />
         ) : (
-          <Game />
+          imagesType !== null && <MemoryGame imagesType={imagesType} onBackToHome={() => setShowGame(false)} />
         )}
       </SafeAreaView>
     </>

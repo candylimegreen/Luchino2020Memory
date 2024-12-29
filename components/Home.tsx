@@ -1,10 +1,11 @@
 import React from 'react';
 import { StyleSheet, View, Image, TouchableOpacity, Text, Dimensions } from 'react-native';
+import { ImagesType } from '../lib/enums';
 
 const { width, height } = Dimensions.get('window');
 
 interface HomeProps {
-  onStartGame: () => void;
+  onStartGame: (imagesType: ImagesType) => void;
 }
 
 export default function Home({ onStartGame }: HomeProps) {
@@ -17,9 +18,14 @@ export default function Home({ onStartGame }: HomeProps) {
           resizeMode="contain"
         />
       </View>
-      <TouchableOpacity style={styles.button} onPress={onStartGame}>
-        <Text style={styles.buttonText}>START</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button} onPress={() => onStartGame(ImagesType.Dinos)}>
+          <Text style={styles.buttonText}>DINOS</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={() => onStartGame(ImagesType.Animals)}>
+          <Text style={styles.buttonText}>ANIMALS</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -38,25 +44,23 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  button: {
+  buttonContainer: {
     position: 'absolute',
     bottom: 50,
     left: 0,
     right: 0,
-    marginHorizontal: 'auto',
-    alignSelf: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 20,
+  },
+  button: {
     backgroundColor: '#2196F3',
     paddingHorizontal: 40,
     paddingVertical: 15,
-    borderRadius: 25,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    borderRadius: 10,
+    minWidth: 150,
+    alignItems: 'center',
   },
   buttonText: {
     color: '#fff',

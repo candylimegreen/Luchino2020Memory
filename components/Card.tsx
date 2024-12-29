@@ -5,22 +5,27 @@ const { width, height } = Dimensions.get('window');
 const CARD_SIZE = Math.min((width - 60) / 4, (height - 280) / 4);
 
 interface CardProps {
-  value: any;
-  isFlipped: boolean;
+  card: {
+    value: any;
+    isFlipped: boolean;
+    isMatched: boolean;
+  };
   onPress: () => void;
+  style?: any;
+  imageStyle?: any;
 }
 
-export default function Card({ value, isFlipped, onPress }: CardProps) {
+export default function Card({ card, onPress, style, imageStyle }: CardProps) {
   const flipAnimation = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.spring(flipAnimation, {
-      toValue: isFlipped ? 180 : 0,
+      toValue: card.isFlipped ? 180 : 0,
       friction: 8,
       tension: 10,
       useNativeDriver: true,
     }).start();
-  }, [isFlipped]);
+  }, [card.isFlipped]);
 
   const frontInterpolate = flipAnimation.interpolate({
     inputRange: [0, 180],
@@ -41,9 +46,9 @@ export default function Card({ value, isFlipped, onPress }: CardProps) {
   };
 
   return (
-    <TouchableOpacity onPress={onPress} style={styles.container}>
+    <TouchableOpacity onPress={onPress} style={[styles.container, style]}>
       <Animated.View style={[styles.card, styles.cardFront, frontAnimatedStyle]}>
-        <Image source={value} style={styles.image} resizeMode="contain" />
+        <Image source={card.value} style={[styles.image, imageStyle]} resizeMode="contain" />
       </Animated.View>
       <Animated.View style={[styles.card, styles.cardBack, backAnimatedStyle]}>
         <Text style={styles.cardText}>?</Text>
@@ -75,7 +80,7 @@ const styles = StyleSheet.create({
   },
   cardFront: {
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    borderColor: '#FF8C00',
+    borderColor: '#fff',
   },
   cardBack: {
     backgroundColor: 'rgba(255, 0, 0, 0.9)',
@@ -87,7 +92,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   image: {
-    width: '90%',
-    height: '90%',
+    width: '100%',
+    height: '100%',
+    borderRadius: 15
   },
 });
